@@ -1,0 +1,29 @@
+<%= form_with url: import_products_path, local: true, multipart: true do |form| %>
+  <p>
+    <%= form.file_field :file %>
+    <%= form.submit "Import CSV" %>
+  </p>
+<% end %>
+
+<table>
+  <thead>
+    <tr>
+      <th>SKU</th>
+      <th>Name</th>
+      <th>Supplier</th>
+      <th>Cost Price</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @products.each do |product| %>
+      <tr>
+        <td><%= product.sku %></td>
+        <td><%= product.name %></td>
+        <td><%= product.supplier %></td>
+        <td><%= product.cost_price %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= link_to "Export CSV", export_products_path, class: "btn btn-primary" %>
