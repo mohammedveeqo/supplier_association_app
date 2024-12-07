@@ -1,29 +1,14 @@
-<%= form_with url: import_products_path, local: true, multipart: true do |form| %>
+<h1>Associate Suppliers with Products</h1>
+
+<!-- File Upload Form -->
+<%= form_with url: import_products_path, method: :post, multipart: true, class: "mb-4" do |f| %>
   <p>
-    <%= form.file_field :file %>
-    <%= form.submit "Import CSV" %>
+    <%= f.file_field :file, class: "form-control" %>
+  </p>
+  <p>
+    <%= f.submit "Upload CSV", class: "btn btn-primary" %>
   </p>
 <% end %>
 
-<table>
-  <thead>
-    <tr>
-      <th>SKU</th>
-      <th>Name</th>
-      <th>Supplier</th>
-      <th>Cost Price</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @products.each do |product| %>
-      <tr>
-        <td><%= product.sku %></td>
-        <td><%= product.name %></td>
-        <td><%= product.supplier %></td>
-        <td><%= product.cost_price %></td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
-
-<%= link_to "Export CSV", export_products_path, class: "btn btn-primary" %>
+<!-- Render the products table -->
+<%= render "products_table", products: @products, csv_data: @csv_data %>

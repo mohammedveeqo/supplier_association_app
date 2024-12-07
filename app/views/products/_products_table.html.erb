@@ -1,0 +1,32 @@
+<table id="products_table" class="table table-bordered">
+  <thead>
+    <tr>
+      <th>SKU</th>
+      <th>Product Title</th>
+      <th>Supplier Name</th>
+      <th>Supplier Cost</th>
+      <th>Supplier Reference</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% if csv_data.present? %>
+      <% csv_data.each do |row| %>
+        <tr>
+          <td><%= row["sku_code"] %></td>
+          <td><%= row["product_title"] %></td>
+          <td><%= row["supplier_name"] %></td>
+          <td>
+            <%= text_field_tag "supplier_cost[#{row['sku_code']}][#{row['supplier_id']}]", row["supplier_cost"], class: "form-control" %>
+          </td>
+          <td>
+            <%= text_field_tag "supplier_ref[#{row['sku_code']}][#{row['supplier_id']}]", row["supplier_ref"], class: "form-control" %>
+          </td>
+        </tr>
+      <% end %>
+    <% else %>
+      <tr>
+        <td colspan="5">No data available. Upload a CSV file.</td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

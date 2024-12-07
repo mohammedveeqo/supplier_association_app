@@ -1,6 +1,10 @@
 class Product < ApplicationRecord
-  validates :sku, presence: true
-  validates :name, presence: true
-  validates :supplier, allow_blank: true, format: { with: /\A[\w\s]+\z/, message: "only allows letters and numbers" }
-  validates :cost_price, numericality: { greater_than_or_equal_to: 0 }, allow_blank: true
+  # Assuming there's a relationship with a Supplier model
+  has_many :supplier_products
+  has_many :suppliers, through: :supplier_products
+
+  def update_supplier_data(supplier_id, cost, reference)
+    supplier_product = supplier_products.find_or_initialize_by(supplier_id: supplier_id)
+    supplier_product.update(cost: cost, reference: reference)
+  end
 end

@@ -1,0 +1,4 @@
+<%= turbo_stream.replace "products_table" do %>
+    <%= render "products_table", products: @products, csv_data: @csv_data %>
+  <% end %>
+  

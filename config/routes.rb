@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   resources :products do
     collection do
       post :import
-      get :export
+      post :bulk_update
     end
   end
   root "products#index"
