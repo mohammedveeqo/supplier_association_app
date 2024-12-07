@@ -2,7 +2,8 @@ class ProductsController < ApplicationController
   require 'csv'
 
   def index
-    @csv_data = session[:csv_data] || [] # Retrieve uploaded data from session
+    @csv_data = session[:csv_data] || []
+    Rails.logger.info "Session Data at Index: #{@csv_data.inspect}" # Debug session data
   end
 
   def import
@@ -10,26 +11,31 @@ class ProductsController < ApplicationController
       csv_file = params[:file]
       @csv_data = []
 
+      Rails.logger.info "CSV file uploaded: #{csv_file.original_filename}" # Log file name
+
       # Parse the CSV file
       CSV.foreach(csv_file.path, headers: true) do |row|
+        Rails.logger.info "Processing row: #{row.to_h}" # Log each row being processed
+
         # Extract fixed product fields
         relevant_data = {
           "sku_code" => row["sku_code"],
           "product_id" => row["product_id"],
           "product_title" => row["product_title"],
           "sell_price" => row["sell_price"],
-          "tax_rate" => row["tax_rate"]
+          "tax_rate" => row["tax_rate"],
+          "suppliers" => parse_supplier_data(row)
         }
-
-        # Parse dynamic supplier data
-        relevant_data["suppliers"] = parse_supplier_data(row)
         @csv_data << relevant_data
       end
 
-      # Save parsed data to the session
       session[:csv_data] = @csv_data
+      Rails.logger.info "Final Session Data: #{session[:csv_data].inspect}" # Debug session data
 
-      redirect_to products_path, notice: "CSV data imported successfully."
+      respond_to do |format|
+        format.turbo_stream { render :index }
+        format.html { redirect_to products_path, notice: "CSV uploaded and parsed successfully." }
+      end
     else
       redirect_to products_path, alert: "Please upload a valid CSV file."
     end
@@ -51,12 +57,10 @@ class ProductsController < ApplicationController
         end
       end
 
-      # Update session with modified data
       session[:csv_data] = @csv_data
-
-      redirect_to products_path, notice: "Supplier data updated successfully."
+      redirect_to products_path, notice: "Supplier costs updated successfully."
     else
-      redirect_to products_path, alert: "No data was updated."
+      redirect_to products_path, alert: "No updates provided."
     end
   end
 
@@ -67,7 +71,6 @@ class ProductsController < ApplicationController
       headers = ["sku_code", "product_id", "product_title", "sell_price", "tax_rate"]
       max_suppliers = @csv_data.map { |row| row["suppliers"].size }.max || 0
 
-      # Add dynamic supplier columns
       (1..max_suppliers).each do |index|
         headers += [
           "supplier_#{index}_id",
@@ -78,7 +81,6 @@ class ProductsController < ApplicationController
       end
       csv << headers
 
-      # Prepare rows
       @csv_data.each do |row|
         base_row = [
           row["sku_code"],
@@ -109,8 +111,8 @@ class ProductsController < ApplicationController
   end
 
   def clear
-    session[:csv_data] = nil # Clear the session data
-    redirect_to products_path, notice: "CSV data cleared. You can upload a new file."
+    session[:csv_data] = nil
+    redirect_to products_path, notice: "Data cleared. You can upload a new CSV."
   end
 
   private

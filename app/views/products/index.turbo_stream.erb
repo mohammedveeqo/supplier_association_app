@@ -1,4 +1,7 @@
-<%= turbo_stream.replace "products_table" do %>
-    <%= render "products_table", products: @products, csv_data: @csv_data %>
+<div id="products_table">
+  <% if @csv_data.present? %>
+    <%= render partial: "products_table", locals: { csv_data: @csv_data } %>
+  <% else %>
+    <p>No data available. Please upload a CSV file.</p>
   <% end %>
-  
+</div>
