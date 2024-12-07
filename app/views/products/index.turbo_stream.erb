@@ -1,7 +1,10 @@
-<div id="products_table">
-  <% if @csv_data.present? %>
-    <%= render partial: "products_table", locals: { csv_data: @csv_data } %>
-  <% else %>
-    <p>No data available. Please upload a CSV file.</p>
-  <% end %>
-</div>
+<%= turbo_stream.replace "products_table" do %>
+  <%= render partial: "products_table", locals: { csv_data: @csv_data } %>
+<% end %>
+
+<%= turbo_stream.replace "action_buttons" do %>
+  <div id="action_buttons" class="mt-3">
+    <%= link_to "Export CSV", export_products_path, class: "btn btn-secondary" %>
+    <%= link_to "Clear Data", clear_products_path, method: :get, class: "btn btn-danger" %>
+  </div>
+<% end %>

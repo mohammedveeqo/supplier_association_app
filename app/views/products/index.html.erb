@@ -1,29 +1,25 @@
 <h1>Manage Supplier Associations</h1>
 
-<% if @csv_data.blank? %>
-  <!-- File Upload Form -->
-  <div class="card">
-    <div class="card-body">
-      <h3>Upload a CSV File</h3>
-      <%= form_with url: import_products_path, method: :post, multipart: true, class: "mb-4" do |f| %>
-        <div class="mb-3">
-          <%= f.file_field :file, class: "form-control", accept: ".csv" %>
-        </div>
-        <div>
-          <%= f.submit "Upload CSV", class: "btn btn-primary" %>
-        </div>
-      <% end %>
-    </div>
-  </div>
-<% else %>
-  <!-- Table Section -->
-  <div id="products_table">
+<div id="products_table">
+  <% if @csv_data.present? %>
     <%= render partial: "products_table", locals: { csv_data: @csv_data } %>
-  </div>
+  <% else %>
+    <p>No data available. Please upload a CSV file.</p>
+  <% end %>
+</div>
 
-  <!-- Buttons Section -->
-  <div id="action_buttons" class="mt-3">
+<div id="action_buttons">
+  <% if @csv_data.present? %>
     <%= link_to "Export CSV", export_products_path, class: "btn btn-secondary" %>
     <%= link_to "Clear Data", clear_products_path, method: :get, class: "btn btn-danger" %>
-  </div>
-<% end %>
+  <% else %>
+    <%= form_with url: import_products_path, method: :post, multipart: true do |f| %>
+      <div>
+        <%= f.file_field :file, class: "form-control" %>
+      </div>
+      <div>
+        <%= f.submit "Upload CSV", class: "btn btn-primary mt-2" %>
+      </div>
+    <% end %>
+  <% end %>
+</div>

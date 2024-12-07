@@ -33,7 +33,7 @@ class ProductsController < ApplicationController
       Rails.logger.info "Final Session Data: #{session[:csv_data].inspect}" # Debug session data
 
       respond_to do |format|
-        format.turbo_stream { render :index }
+        format.turbo_stream { render :import }
         format.html { redirect_to products_path, notice: "CSV uploaded and parsed successfully." }
       end
     else
