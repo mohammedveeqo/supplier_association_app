@@ -5,8 +5,7 @@
       <th>Product Title</th>
       <% if csv_data.present? %>
         <% csv_data.first["suppliers"].each_with_index do |supplier, index| %>
-          <th>Supplier Name (<%= index + 1 %>)</th>
-          <th>Supplier Cost (<%= index + 1 %>)</th>
+          <th><%= supplier["supplier_name"] %></th>
         <% end %>
       <% end %>
     </tr>
@@ -18,15 +17,11 @@
           <td><%= row["sku_code"] %></td>
           <td><%= row["product_title"] %></td>
           <% row["suppliers"].each do |supplier| %>
-            <td><%= supplier["supplier_name"] %></td>
             <td>
-              <%= text_field_tag "supplier_cost[#{row['sku_code']}][#{supplier['supplier_id']}]", supplier["supplier_cost"], class: "form-control" %>
-            </td>
-            <!-- Hidden fields for Supplier ID and Reference -->
-            <td hidden>
+              <!-- Editable Cost Price -->
+              Cost: <%= text_field_tag "supplier_cost[#{row['sku_code']}][#{supplier['supplier_id']}]", supplier["supplier_cost"], class: "form-control" %>
+              <!-- Hidden fields for Supplier ID and Reference -->
               <%= hidden_field_tag "supplier_id[#{row['sku_code']}][#{supplier['supplier_id']}]", supplier["supplier_id"] %>
-            </td>
-            <td hidden>
               <%= hidden_field_tag "supplier_ref[#{row['sku_code']}][#{supplier['supplier_id']}]", supplier["supplier_ref"] %>
             </td>
           <% end %>
@@ -34,7 +29,7 @@
       <% end %>
     <% else %>
       <tr>
-        <td colspan="4">No data available. Upload a CSV file.</td>
+        <td colspan="3">No data available. Upload a CSV file.</td>
       </tr>
     <% end %>
   </tbody>
